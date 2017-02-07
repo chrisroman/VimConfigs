@@ -1,0 +1,6 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_1='/Users/chrisroman/.vim'
+let g:netrw_dirhist_2='/Users/chrisroman/.oh-my-zsh/lib'
+let g:netrw_dirhist_3='/Users/chrisroman/.oh-my-zsh/themes'
+let g:netrw_dirhist_4='/Users/chrisroman/CS 3410/p8_malloc'
