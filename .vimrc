@@ -12,10 +12,22 @@ Plugin 'VundleVim/Vundle.vim'
 
 " Git plugin not hosted on GitHub
 Plugin 'git://git.wincent.com/command-t.git'
-Plugin 'yonchu/accelerated-smooth-scroll'
+" Plugin 'yonchu/accelerated-smooth-scroll'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'https://github.com/justinmk/vim-syntax-extra.git'
+Plugin 'jez/vim-superman'
+Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-easytags'
+Plugin 'majutsushi/tagbar'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'tpope/vim-fugitive'
+" Snippet Management
+"Plugin 'SirVer/ultisnips'
+"Plugin 'honza/vim-snippets'
+"
 
 " git repos on your local machine (i.e. when working on your own plugin)
 
@@ -39,6 +51,40 @@ runtime macros/matchit.vim
 
 set ttyfast
 set lazyredraw
+
+" Setup easymotion
+" <Leader>f{char} to move to {char}
+map  <Leader>f <Plug>(easymotion-bd-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+" s{char}{char} to move to {char}{char}
+nmap s <Plug>(easymotion-overwin-f2)
+
+" Move to line
+map <Leader>L <Plug>(easymotion-bd-jk)
+nmap <Leader>L <Plug>(easymotion-overwin-line)
+
+" Move to word
+map  <Leader>w <Plug>(easymotion-bd-w)
+nmap <Leader>w <Plug>(easymotion-overwin-w)
+
+" Set up Tags
+" Where to look for tags files
+set tags=./tags;,~/.vimtags
+" Sensible defaults
+let g:easytags_events = ['BufReadPost', 'BufWritePost']
+let g:easytags_async = 1
+let g:easytags_dynamic_files = 2
+let g:easytags_resolve_links = 1
+let g:easytags_suppress_ctags_warning = 1
+
+" ----- majutsushi/tagbar settings -----
+" Open/close tagbar with \b
+nmap <silent> <leader>l :TagbarToggle<CR>
+" Uncomment to open tagbar automatically whenever possible
+autocmd BufEnter * nested :call tagbar#autoopen(0)
+autocmd FileType tagbar setlocal nocursorline nocursorcolumn
+let g:tagbar_width=35
 
 let g:ruby_path="~/.rvm/bin/ruby"
 
@@ -66,45 +112,55 @@ endif
 
 colo molokai
 let g:molokai_original = 1
-" let g:seoul256_background = 235
-" colo seoul256
 
-  highlight clear SignColumn
-  highlight VertSplit    ctermbg=236
-  highlight ColorColumn  ctermbg=237
-  highlight LineNr       ctermbg=236 ctermfg=240
-  highlight CursorLineNr ctermbg=236 ctermfg=240
-  highlight CursorLine   ctermbg=236
-  highlight StatusLineNC ctermbg=238 ctermfg=0
-  highlight StatusLine   ctermbg=240 ctermfg=7
-  highlight IncSearch    ctermbg=3   ctermfg=1
-  highlight Search       ctermbg=1   ctermfg=3
-  highlight Visual       ctermbg=3   ctermfg=0
-  highlight Pmenu        ctermbg=240 ctermfg=12
-  highlight PmenuSel     ctermbg=3   ctermfg=1
-  highlight SpellBad     ctermbg=0   ctermfg=1
+highlight clear SignColumn
+highlight VertSplit    ctermbg=236
+highlight ColorColumn  ctermbg=237
+highlight LineNr       ctermbg=236 ctermfg=240
+highlight CursorLineNr ctermbg=236 ctermfg=240
+highlight CursorLine   ctermbg=236
+highlight StatusLineNC ctermbg=238 ctermfg=0
+highlight StatusLine   ctermbg=240 ctermfg=7
+highlight IncSearch    ctermbg=3   ctermfg=1
+highlight Search       ctermbg=1   ctermfg=3
+highlight Visual       ctermbg=3   ctermfg=0
+highlight Pmenu        ctermbg=240 ctermfg=12
+highlight PmenuSel     ctermbg=3   ctermfg=1
+highlight SpellBad     ctermbg=0   ctermfg=1
 
 " NERDTree Tab Mappings
+let g:NERDTreeWinSize=25
 map  <C-l> :tabn<CR>
 map  <C-h> :tabp<CR>
 map  <C-n> :tabnew<CR>
+let NERDTreeIgnore = ['\.o$']
 
 " Leader Mappings
 map <Space> <leader>
-map <Leader>w :update<CR>
+"map <Leader>w :update<CR>
 map <Leader>q :qall<CR>
 map <Leader>gs :Gstatus<CR>
 map <Leader>gc :Gcommit<CR>
 map <Leader>gp :Gpush<CR>
-"
-" RSpec.vim mappings
-map <Leader>t :call RunCurrentSpecFile()<CR>
-map <Leader>s :call RunNearestSpec()<CR>
-map <Leader>l :call RunLastSpec()<CR>
-map <Leader>a :call RunAllSpecs()<CR>
+map <Leader>t :CommandT<CR>
 
+" Swapping mappings
+nnoremap <C-J> m`o<Esc>``
+nnoremap <C-K> m`O<Esc>``
+
+" Get rid of search highlighting
+map ,<Space> :nohlsearch<CR>
+
+" Highlight last inserted text
+nnoremap gV `[v`]
 
 " Toggle nerdtree with F10
+"autocmd VimEnter * NERDTree
+"autocmd BufEnter * NERDTreeMirror
+"autocmd VimEnter * wincmd w
+let g:nerdtree_tabs_open_on_console_startup=1
+let g:nerdtree_tabs_focus_on_files=1
+
 map <F10> :NERDTreeToggle<CR>
 " Current file in nerdtree
 map <F9> :NERDTreeFind<CR>
@@ -214,6 +270,7 @@ endif
 " Numbers
 set number
 set numberwidth=5
+set relativenumber
 
 " Persistent undo
 set undodir=~/.vim/undo/
@@ -261,16 +318,6 @@ set splitright
 " Quicker window movement. Seemlessly navigate between Vim/Tmux panes
 let g:tmux_navigator_no_mappings = 1
 
-" This is a hack due to a neovim bug for going Left
-" Details: https://github.com/christoomey/vim-tmux-navigator#it-doesnt-work-in-neovim-specifically-c-h
-nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
-
-nnoremap <silent> <c-h> :TmuxNavigateLeft<cr>
-nnoremap <silent> <c-j> :TmuxNavigateDown<cr>
-nnoremap <silent> <c-k> :TmuxNavigateUp<cr>
-nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
-nnoremap <silent> {Previous-Mapping} :TmuxNavigatePrevious<cr>
-
 " configure syntastic syntax checking to check on open as well as save
 let g:syntastic_ruby_checkers = ['mri']
 let g:syntastic_enable_highlighting=0
@@ -289,14 +336,8 @@ endfunction
 au BufWritePre * :call <SID>RemoveTrailingWhitespaces()
 
 " cmd n, cmd p for fwd/backward in search
-map <C-n> :cn<CR>
-map <C-p> :cp<CR>
-
-" Create related file (Rails Spec file if missing). :AC
-function! s:CreateRelated()
-  let related = rails#buffer().alternate_candidates()[0]
-  call s:Open(related)
-endfunction
+"map <C-n> :cn<CR>
+"map <C-p> :cp<CR>
 
 function! s:Open(file)
   exec('vsplit ' . a:file)
@@ -308,10 +349,62 @@ set runtimepath^=~/.vim/bundle/ctrlp.vim
 
 " Set auto completion
 let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
-let g:ycm_autoclose_preview_window_after_completion = 1
-set completeopt-=preview
+"let g:ycm_autoclose_preview_window_after_completion = 1
+"set completeopt-=preview
+
+" Use clang_complete instead
+"let g:clang_library_path='/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
+"set conceallevel=2
+"set concealcursor=vin
+"let g:clang_snippets=1
+""let g:clang_conceal_snippets=1
+"let g:clang_snippets_engine='clang_complete'
+"
+"" Complete options (disable preview scratch window, longest removed to aways show menu)
+"set completeopt=menu,menuone
+"
+"" Limit popup menu height
+"set pumheight=20
+"
+"" SuperTab completion fall-back
+"let g:SuperTabDefaultCompletionType='<c-x><c-u><c-p>'
+
+
+augroup configgroup
+    autocmd!
+    autocmd VimEnter * highlight clear SignColumn
+    "autocmd BufWritePre *.php,*.py,*.js,*.txt,*.hs,*.java,*.md
+    "            \:call <SID>StripTrailingWhitespaces()
+    autocmd FileType php setlocal expandtab
+    autocmd FileType php setlocal list
+    autocmd FileType php setlocal listchars=tab:+\ ,eol:-
+    autocmd FileType php setlocal formatprg=par\ -w80\ -T4
+    autocmd FileType ruby setlocal tabstop=2
+    autocmd FileType ruby setlocal shiftwidth=2
+    autocmd FileType ruby setlocal softtabstop=2
+    autocmd FileType ruby setlocal commentstring=#\ %s
+    autocmd FileType python setlocal commentstring=#\ %s
+    autocmd BufEnter *.cls setlocal filetype=java
+    autocmd BufEnter *.zsh-theme setlocal filetype=zsh
+    autocmd BufEnter Makefile setlocal noexpandtab
+    autocmd BufEnter *.sh setlocal tabstop=2
+    autocmd BufEnter *.sh setlocal shiftwidth=2
+    autocmd BufEnter *.sh setlocal softtabstop=2
+augroup END
+
+
+" strips trailing whitespace at the end of files. this
+" is called on buffer write in the autogroup above.
+function! <SID>StripTrailingWhitespaces()
+    " save last search & cursor position
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    let @/=_s
+    call cursor(l, c)
+endfunction
 
 " Use pathogen
 execute pathogen#infect()
-
 
