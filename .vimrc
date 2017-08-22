@@ -24,6 +24,7 @@ Plugin 'easymotion/vim-easymotion'
 Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'tpope/vim-fugitive'
+Plugin 'jiangmiao/auto-pairs'
 " Snippet Management
 "Plugin 'SirVer/ultisnips'
 "Plugin 'honza/vim-snippets'
@@ -52,6 +53,9 @@ runtime macros/matchit.vim
 set ttyfast
 set lazyredraw
 
+" Airline config
+let g:airline_theme='powerlineish'
+
 " Setup easymotion
 " <Leader>f{char} to move to {char}
 map  <Leader>f <Plug>(easymotion-bd-f)
@@ -79,12 +83,12 @@ let g:easytags_resolve_links = 1
 let g:easytags_suppress_ctags_warning = 1
 
 " ----- majutsushi/tagbar settings -----
-" Open/close tagbar with \b
+" Open/close tagbar with <leader>l
 nmap <silent> <leader>l :TagbarToggle<CR>
 " Uncomment to open tagbar automatically whenever possible
-autocmd BufEnter * nested :call tagbar#autoopen(0)
+" autocmd BufEnter * nested :call tagbar#autoopen(0)
 autocmd FileType tagbar setlocal nocursorline nocursorcolumn
-let g:tagbar_width=35
+let g:tagbar_width=28
 
 let g:ruby_path="~/.rvm/bin/ruby"
 
@@ -129,7 +133,7 @@ highlight PmenuSel     ctermbg=3   ctermfg=1
 highlight SpellBad     ctermbg=0   ctermfg=1
 
 " NERDTree Tab Mappings
-let g:NERDTreeWinSize=25
+let g:NERDTreeWinSize=18
 map  <C-l> :tabn<CR>
 map  <C-h> :tabp<CR>
 map  <C-n> :tabnew<CR>
@@ -269,8 +273,18 @@ endif
 
 " Numbers
 set number
-set numberwidth=5
 set relativenumber
+set numberwidth=5
+
+" Better line numbers
+autocmd InsertEnter * :set number
+autocmd InsertEnter * :set norelativenumber
+autocmd InsertLeave * :set relativenumber
+
+:au FocusLost * :set number
+:au FocusLost * :set norelativenumber
+:au FocusGained * :set relativenumber
+
 
 " Persistent undo
 set undodir=~/.vim/undo/
@@ -298,9 +312,6 @@ function! InsertTabWrapper()
     endif
 endfunction
 inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
-
-" Exclude Javascript files in :Rtags via rails.vim due to warnings when parsing
-let g:Tlist_Ctags_Cmd="ctags --exclude='*.js'"
 
 " Get off my lawn - helpful when learning Vim :)
 nnoremap <Left> :echoe "Use h"<CR>
@@ -353,7 +364,7 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 "set completeopt-=preview
 
 " Use clang_complete instead
-"let g:clang_library_path='/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
+let g:clang_library_path='/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
 "set conceallevel=2
 "set concealcursor=vin
 "let g:clang_snippets=1
