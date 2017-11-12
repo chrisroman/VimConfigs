@@ -19,9 +19,10 @@ filetype off                  " required
     Plugin 'jez/vim-superman'
     Plugin 'xolox/vim-misc'
     Plugin 'xolox/vim-easytags'
-    Plugin 'majutsushi/tagbar'
+    "Plugin 'majutsushi/tagbar'
     Plugin 'easymotion/vim-easymotion'
-    "Plugin 'jistr/vim-nerdtree-tabs'
+    " For having nerdtree open on startup
+    Plugin 'jistr/vim-nerdtree-tabs'
     Plugin 'Valloric/YouCompleteMe'
     Plugin 'tpope/vim-fugitive'
     Plugin 'jiangmiao/auto-pairs'
@@ -102,10 +103,10 @@ set colorcolumn=81
 
     " ----- majutsushi/tagbar settings -----
     " Open/close tagbar with <leader>l
-    nmap <silent> <leader>l :TagbarToggle<CR>
+    "nmap <silent> <leader>l :TagbarToggle<CR>
     " Uncomment to open tagbar automatically whenever possible
     " autocmd BufEnter * nested :call tagbar#autoopen(0)
-    autocmd FileType tagbar setlocal nocursorline nocursorcolumn
+    "autocmd FileType tagbar setlocal nocursorline nocursorcolumn
     let g:tagbar_width=28
 
 " Random Stuff
@@ -125,7 +126,7 @@ set colorcolumn=81
     noremap <C-y> 3<C-y>
 
 " Color Scheme
-    " set background=dark
+    set background=dark
     if has('gui_running')
       let g:solarized_termcolors=256
     else
@@ -143,27 +144,29 @@ set colorcolumn=81
     au VimEnter *.* highlight SpellBad     ctermbg=0   ctermfg=1
 
 " NERDTree Tab Mappings
-    let g:NERDTreeWinSize=18
-    map  <C-l> :tabn<CR>
-    map  <C-h> :tabp<CR>
+    let g:NERDTreeWinSize=17
     map  <C-n> :tabnew<CR>
     let NERDTreeIgnore = ['\.o$']
-    " Toggle nerdtree with F10
+
+    "autocmd VimEnter * wincmd w
     "autocmd VimEnter * NERDTree
     "autocmd BufEnter * NERDTreeMirror
-    "autocmd VimEnter * wincmd w
 
-    "let g:nerdtree_tabs_open_on_console_startup=1
-    "let g:nerdtree_tabs_focus_on_files=1
+    let g:nerdtree_tabs_open_on_console_startup=1
+    let g:nerdtree_tabs_focus_on_files=1
+    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") 
+          \ && b:NERDTreeType == "primary") | q | endif
 
-    map <F10> :NERDTreeToggle<CR>
+    map <Leader>n :NERDTreeToggle<CR>
     " Current file in nerdtree
     map <F9> :NERDTreeFind<CR>
+    map <Leader>m :tabmove 
 
 " Leader Mappings
     map <Space> <leader>
     "map <Leader>w :update<CR>
     map <Leader>q :qall<CR>
+    map <Leader>ga :Git add %:p<CR><CR>
     map <Leader>gs :Gstatus<CR>
     map <Leader>gc :Gcommit<CR>
     map <Leader>gp :Gpush<CR>
@@ -186,8 +189,8 @@ set colorcolumn=81
 
 " highlight vertical column of cursor
     au WinLeave * set nocursorline nocursorcolumn
-    au WinEnter * set cursorline
-    set cursorline
+    "au WinEnter * set cursorline
+    "set cursorline
 
 "key to insert mode with paste using F2 key
     map <F2> :set paste<CR>i
@@ -195,6 +198,7 @@ set colorcolumn=81
     au InsertLeave * set nopaste
 
 " Useful, but more kinda random stuff
+    "set textwidth=80
     set backspace=2   " Backspace deletes like most programs in insert mode
     set nocompatible  " Use Vim settings, rather then Vi settings
     set nobackup
@@ -329,11 +333,10 @@ set undoreload=10000
     set splitright
 
 " Quicker window movement. Seemlessly navigate between Vim/Tmux panes
-let g:tmux_navigator_no_mappings = 1
+    let g:tmux_navigator_no_mappings = 1
 
-" cmd n, cmd p for fwd/backward in search
-    "map <C-n> :cn<CR>
-    "map <C-p> :cp<CR>
+    nnoremap <C-Left> :tabprevious<CR>
+    nnoremap <C-Right> :tabnext<CR>
 
 function! s:Open(file)
   exec('vsplit ' . a:file)
@@ -352,8 +355,8 @@ let g:ycm_autoclose_preview_window_after_insertion=1
 augroup configgroup
     autocmd!
     autocmd VimEnter * highlight clear SignColumn
-    autocmd BufWritePre *.php,*.py,*.js,*.txt,*.hs,*.java,*.md
-                \:call <SID>StripTrailingWhitespaces()
+    "autocmd BufWritePre *.php,*.py,*.js,*.txt,*.hs,*.java,*.md
+    "            \:call <SID>StripTrailingWhitespaces()
     autocmd FileType php setlocal expandtab
     autocmd FileType php setlocal list
     autocmd FileType php setlocal listchars=tab:+\ ,eol:-
@@ -364,6 +367,20 @@ augroup configgroup
     autocmd FileType ruby setlocal commentstring=#\ %s
     autocmd FileType python setlocal commentstring=#\ %s
     
+    " C/C++ Stuff
+    autocmd FileType c map <Leader>t :YcmCompleter GetType<CR>
+    autocmd FileType h map <Leader>t :YcmCompleter GetType<CR>
+    autocmd FileType cc map <Leader>t :YcmCompleter GetType<CR>
+    autocmd FileType hh map <Leader>t :YcmCompleter GetType<CR>
+    autocmd FileType cpp map <Leader>t :YcmCompleter GetType<CR>
+    autocmd FileType hpp map <Leader>t :YcmCompleter GetType<CR>
+    autocmd FileType c setlocal nowrap
+    autocmd FileType h setlocal nowrap
+    autocmd FileType cc setlocal nowrap
+    autocmd FileType hh setlocal nowrap
+    autocmd FileType cpp setlocal nowrap
+    autocmd FileType hpp setlocal nowrap
+
     " Ocaml files 85 width MAX, but really 80 is preferred
     autocmd FileType ocaml setlocal textwidth=80
     autocmd FileType ocaml setlocal tabstop=2
@@ -373,8 +390,9 @@ augroup configgroup
     autocmd FileType ocaml setlocal foldnestmax=10
     autocmd FileType ocaml setlocal nofoldenable
     autocmd FileType ocaml setlocal foldlevel=2
+    autocmd FileType ocaml map <Leader>ml :MerlinTypeOf<CR>
     
-    autocmd BufEnter *.cls setlocal filetype=java
+    "autocmd BufEnter *.cls setlocal filetype=java
     autocmd BufEnter *.zsh-theme setlocal filetype=zsh
     autocmd BufEnter Makefile setlocal noexpandtab
     autocmd BufEnter *.sh setlocal tabstop=2
@@ -383,21 +401,21 @@ augroup configgroup
 augroup END
 
 " OCaml Vim Settings
-    set rtp+=/Users/chrisroman/.opam/4.05.0/share/ocp-indent/vim
+    set rtp+='/Users/chrisroman/.opam/4.05.0/share/ocp-indent/vim'
     let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
     execute "set rtp+=" . g:opamshare . "/merlin/vim"''
 
 " strips trailing whitespace at the end of files. this
 " is called on buffer write in the autogroup above.
-function! <SID>StripTrailingWhitespaces()
-    " save last search & cursor position
-    let _s=@/
-    let l = line(".")
-    let c = col(".")
-    %s/\s\+$//e
-    let @/=_s
-    call cursor(l, c)
-endfunction
+"function! <SID>StripTrailingWhitespaces()
+"    " save last search & cursor position
+"    let _s=@/
+"    let l = line(".")
+"    let c = col(".")
+"    %s/\s\+$//e
+"    let @/=_s
+"    call cursor(l, c)
+"endfunction
 
 " Snippet Config
     " make YCM compatible with UltiSnips (using supertab)
@@ -412,7 +430,7 @@ endfunction
 
 " Syntastic Config
     set statusline+=%#warningmsg#
-    set statusline+=%{SyntasticStatuslineFlag()}
+    "set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
     let g:syntastic_always_populate_loc_list = 1
     "let g:syntastic_auto_loc_list = 1
