@@ -22,6 +22,7 @@ filetype off                  " required
     "Plugin 'majutsushi/tagbar'
     Plugin 'easymotion/vim-easymotion'
     " For having nerdtree open on startup
+    " Plugin 'scrooloose/nerdtree'
     Plugin 'jistr/vim-nerdtree-tabs'
     Plugin 'Valloric/YouCompleteMe'
     Plugin 'tpope/vim-fugitive'
@@ -33,6 +34,8 @@ filetype off                  " required
     Plugin 'vim-syntastic/syntastic'
     " Markdown Folding
     Plugin 'nelstrom/vim-markdown-folding'
+    " Wrap words and such with delimeters
+    Plugin 'tpope/vim-surround'
 
     " git repos on your local machine (i.e. when working on your own plugin)
 
@@ -366,6 +369,7 @@ augroup configgroup
     autocmd FileType ruby setlocal softtabstop=2
     autocmd FileType ruby setlocal commentstring=#\ %s
     autocmd FileType python setlocal commentstring=#\ %s
+    autocmd FileType python setlocal list listchars=tab:»-,trail:·,extends:»,precedes:«
     
     " C/C++ Stuff
     autocmd FileType c map <Leader>t :YcmCompleter GetType<CR>
@@ -382,6 +386,7 @@ augroup configgroup
     autocmd FileType hpp setlocal nowrap
 
     " Ocaml files 85 width MAX, but really 80 is preferred
+    autocmd BufNewFile,BufRead *.eliom set syntax=ocaml
     autocmd FileType ocaml setlocal textwidth=80
     autocmd FileType ocaml setlocal tabstop=2
     autocmd FileType ocaml setlocal softtabstop=2
@@ -446,3 +451,4 @@ augroup END
 " Use pathogen
 "execute pathogen#infect()
 
+let g:gruvbox_contrast_dark="hard"
