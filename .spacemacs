@@ -40,10 +40,10 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      helm
-     ;; auto-completion
+     auto-completion
      better-defaults
      emacs-lisp
-     ;; git
+     git
      ;; markdown
      ;; org
      (shell :variables
@@ -56,8 +56,10 @@ values."
      coq
      themes-megapack
      ocaml
-     (c-c++ :variables c-c++-default-mode-for-headers 'c++-mode)
-     (c-c++ :variables c-c++-enable-clang-support t)
+     (c-c++ :variables
+            c-c++-enable-clang-support t
+            c-c++-enable-rtags-support t
+            c-c++-default-mode-for-headers 'c++-mode)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -66,6 +68,8 @@ values."
    dotspacemacs-additional-packages
    '(
      vagrant-tramp
+     forge
+     highlight-indent-guides
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -346,27 +350,54 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  ;; Display line numbers
   (global-display-line-numbers-mode t)
+
+  ;; Smart parenthesis
   (smartparens-mode t)
 
-  ;; Use brew distribution of Clang
-  (setq-default flycheck-c/c++-clang-executable "/usr/local/opt/llvm/bin/clang")
-  ;; (add-hook 'c++-mode-hook
-  ;;           (lambda ()
-  ;;             (setq flycheck-checker 'c/c++-clang)
-  ;;             (setq flycheck-gcc-language-standard "c++11")
-  ;;             (setq flycheck-clang-language-standard "c++11")
-  ;;             (setq flycheck-clang-include-path
-  ;;                   (list (expand-file-name "/usr/local/opt/llvm/include/")))
-  ;;             (add-to-list 'company-backends 'company-c-headers)
-  ;;             (add-to-list 'company-c-headers-path-system "/usr/local/opt/llvm/include/" )))
+  ;; Set auto-completion popup only after 3 characters
+  (setq company-minimum-prefix-length 3)
 
-  ;; Bind clang-format-region to C-M-tab in all modes:
-  (global-set-key [C-M-tab] 'clang-format-region)
-  ;; Bind clang-format-buffer to tab on the c++-mode only:
-  (add-hook 'c++-mode-hook 'clang-format-bindings)
-  (defun clang-format-bindings ()
-    (define-key c++-mode-map [tab] 'clang-format-buffer))
+  ;; Display indentation guide
+  ;; (indent-guide-global-mode)
+;;  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+;;  (setq highlight-indent-guides-method 'character)
+
+  ;; Show 80-line character limit
+ (setq-default fill-column 81)
+ ;; (add-hook 'prog-mode-hook 'turn-on-fci-mode)
+ ;; (add-hook 'text-mode-hook 'turn-on-fci-mode)
+
+  ;; Display Faster (?)
+  (setq redisplay-dont-pause t)
+
+  ;; For Xi programming language (CS 5120)
+  (add-to-list 'auto-mode-alist '("\\.xi\\'" . javascript-mode))
+
+  ;; Forge config
+  (use-package forge
+    :after magit)
+
+  ;; Use brew distribution of Clang
+  (setq-default flycheck-c/c++-clang-executable "/usr/local/opt/llvm/bin/clang++")
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (setq flycheck-checker 'c/c++-clang)
+              (setq flycheck-gcc-language-standard "c++17")
+              (setq flycheck-clang-language-standard "c++17")
+              (setq flycheck-clang-include-path
+                    (list (expand-file-name "/usr/local/opt/llvm/include/")))
+              (add-to-list 'company-backends 'company-c-headers)
+              (add-to-list 'company-c-headers-path-system "/usr/local/opt/llvm/include/" )))
+  ;;
+  ;;            ;; Bind clang-format-region to C-M-tab in all modes:
+  ;;            (global-set-key [C-M-tab] 'clang-format-region)
+  ;;            ;; Bind clang-format-buffer to tab on the c++-mode only:
+  ;;            (add-hook 'c++-mode-hook 'clang-format-bindings)
+  ;;            (defun clang-format-bindings ()
+    ;;            (define-key c++-mode-map [tab] 'clang-format-buffer))
 
   )
 
@@ -377,10 +408,55 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(evil-want-Y-yank-to-eol nil)
+ '(ansi-color-names-vector
+   ["#272822" "#F92672" "#A6E22E" "#E6DB74" "#66D9EF" "#FD5FF0" "#A1EFE4" "#F8F8F2"])
+ '(compilation-message-face (quote default))
+ '(custom-safe-themes
+   (quote
+    ("bd7b7c5df1174796deefce5debc2d976b264585d51852c962362be83932873d9" default)))
+ '(fci-rule-color "#3C3D37" t)
+ '(highlight-changes-colors (quote ("#FD5FF0" "#AE81FF")))
+ '(highlight-tail-colors
+   (quote
+    (("#3C3D37" . 0)
+     ("#679A01" . 20)
+     ("#4BBEAE" . 30)
+     ("#1DB4D0" . 50)
+     ("#9A8F21" . 60)
+     ("#A75B00" . 70)
+     ("#F309DF" . 85)
+     ("#3C3D37" . 100))))
+ '(magit-diff-use-overlays nil)
  '(package-selected-packages
    (quote
-    (company-anaconda yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode anaconda-mode pythonic disaster company-c-headers cmake-mode clang-format csv-mode mmm-mode markdown-toc markdown-mode gh-md unfill mwim utop ocp-indent merlin xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help tuareg caml vagrant-tramp dockerfile-mode docker json-mode tablist magit-popup docker-tramp json-snatcher json-reformat zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme proof-general helm-company helm-c-yasnippet fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck company-statistics auto-yasnippet auto-dictionary ac-ispell auto-complete company-coq yasnippet company-math math-symbol-lists company ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (highlight-indent-guides forge closql emacsql-sqlite emacsql magithub ghub+ apiwrap ghub treepy graphql smeargle orgit magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit transient git-commit with-editor company-anaconda yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode anaconda-mode pythonic disaster company-c-headers cmake-mode clang-format csv-mode mmm-mode markdown-toc markdown-mode gh-md unfill mwim utop ocp-indent merlin xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help tuareg caml vagrant-tramp dockerfile-mode docker json-mode tablist magit-popup docker-tramp json-snatcher json-reformat zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme proof-general helm-company helm-c-yasnippet fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck company-statistics auto-yasnippet auto-dictionary ac-ispell auto-complete company-coq yasnippet company-math math-symbol-lists company ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+ '(pos-tip-background-color "#FFFACE")
+ '(pos-tip-foreground-color "#272822")
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#F92672")
+     (40 . "#CF4F1F")
+     (60 . "#C26C0F")
+     (80 . "#E6DB74")
+     (100 . "#AB8C00")
+     (120 . "#A18F00")
+     (140 . "#989200")
+     (160 . "#8E9500")
+     (180 . "#A6E22E")
+     (200 . "#729A1E")
+     (220 . "#609C3C")
+     (240 . "#4E9D5B")
+     (260 . "#3C9F79")
+     (280 . "#A1EFE4")
+     (300 . "#299BA6")
+     (320 . "#2896B5")
+     (340 . "#2790C3")
+     (360 . "#66D9EF"))))
+ '(vc-annotate-very-old-color nil)
+ '(weechat-color-list
+   (quote
+    (unspecified "#272822" "#3C3D37" "#F70057" "#F92672" "#86C30D" "#A6E22E" "#BEB244" "#E6DB74" "#40CAE4" "#66D9EF" "#FB35EA" "#FD5FF0" "#74DBCD" "#A1EFE4" "#F8F8F2" "#F8F8F0"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
